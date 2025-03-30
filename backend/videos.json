@@ -1,4 +1,12 @@
 [
-    { "id": 1, "title": "Haha Adam", "url": "http://localhost:5000/videos/haha.mp4" },
-    { "id": 2, "title": "Car Edit", "url": "http://localhost:5000/videos/car-edit.mp4"}
+  {
+    "id": 1,
+    "title": "Haha Adam",
+    "url": "http://localhost:5000/videos/haha.mp4"
+  },
+  {
+    "id": 2,
+    "title": "Car Edit",
+    "url": "http://localhost:5000/videos/car-edit.mp4"
+  }
 ]
