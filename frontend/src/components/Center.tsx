@@ -3,21 +3,24 @@ import banner from '../IMG/cat.png';
 
 const Center = () => {
   return (
-    <>
-      <img src={banner} alt="BANNER" className='w-full h-64 rounded-b- xl object-cover' />
-      <div className='items-center bg-[#1D2021] rounded-b-full text-center font-source-code justify-center flex'>
-        GALLERY OF {config.name.toUpperCase()}
+    <div className="flex flex-col items-center">
+      <div className="w-full overflow-hidden">
+        <img 
+          src={banner} 
+          alt={`${config.name} Banner`} 
+          className="w-full h-64 md:h-80 lg:h-96 object-cover rounded-b-xl"
+        />
       </div>
-      <div className="bg-gray-800 px-12 justify-between">
-        {/* <div>
-         
+      
+      <div className="w-full max-w-4xl -mt-6 px-4">
+        <div className="bg-[#1D2021] rounded-full py-3 px-6 shadow-lg">
+          <h1 className="text-white font-source-code text-lg md:text-xl lg:text-2xl font-semibold tracking-wider">
+            GALLERY OF {config.name.toUpperCase()}
+          </h1>
         </div>
-        <div>
-
-        </div> */}
-     </div>
-    </>
-  )
+      </div>
+    </div>
+  );
 }
 
 export default Center;

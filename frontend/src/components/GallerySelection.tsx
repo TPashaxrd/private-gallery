@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BiVolume } from 'react-icons/bi';
+import { BiTrash, BiVolume } from 'react-icons/bi';
 import { BsArrowsFullscreen, BsFullscreenExit } from 'react-icons/bs';
 import { CgClose } from 'react-icons/cg';
 import { config } from '../data/config';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface GalleryItem {
   id: string;
@@ -131,7 +132,15 @@ const GallerySelection = () => {
       setFullscreenItem(itemId);
     }
   };
-
+  function trashToFile(itemId: string) {
+    toast.success(`Successyful Deleted!`, {
+      style: {
+        backgroundColor: '#1D2021',
+        color: '#D4BE98',
+      }
+    });
+    toggleFullscreen(itemId)
+  }
   const handleKeyDown = (e: React.KeyboardEvent, itemId: string) => {
     if (e.key === 'Escape') {
       toggleFullscreen(itemId);
@@ -216,9 +225,10 @@ const GallerySelection = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {galleryItems.map((item) => (
+          // Here is, About Card
           <div 
             key={item.id} 
-            className={`bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ${
+            className={`bg-[#1D2021] rounded-lg justify-between overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ${
               fullscreenItem === item.id ? 
                 'fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4' : 
                 'relative'
@@ -323,35 +333,39 @@ const GallerySelection = () => {
               </div>
             )}
             
-            <div className={`${fullscreenItem === item.id ? 'absolute bottom-4 left-0 right-0 text-center' : 'p-4'}`}>
-              <h3 className="text-lg font-semibold text-white truncate flex gap-2 justify-center items-center">
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFullscreen(item.id);
-                  }}
-                  className="hover:text-blue-300"
-                >
-                  {fullscreenItem === item.id ? (
-                    <BsFullscreenExit size={24} />
-                  ) : (
-                    <BsArrowsFullscreen size={20} />
-                  )}
-                </button>
-                <span>{item.title}</span>
-              </h3>
-              {!fullscreenItem && (
-                <p className="text-gray-400 text-sm mt-1 line-clamp-2">{item.description}</p>
+            <div className={`${fullscreenItem === item.id ? 'absolute w-full bottom-4 left-0 right-0 text-center' : 'p-4'}`}>
+          <div className='flex justify-between items-center px-4'>
+            <h3 className="text-lg font-semibold text-white truncate flex-1 text-center">
+              <span>{item.title}</span>
+            </h3>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleFullscreen(item.id);
+              }}
+              className="hover:text-blue-300 ml-4 flex-shrink-0"
+            >
+              {fullscreenItem === item.id ? (
+                <BsFullscreenExit size={24} />
+              ) : (
+                <BsArrowsFullscreen size={20} />
               )}
-            </div>
-
+            </button>
+          </div>
+          {!fullscreenItem && (
+            <p className="text-gray-400 text-sm mt-1 line-clamp-2">{item.description}</p>
+          )}
+        </div>
             {fullscreenItem === item.id && (
-              <button
+              <>
+               <BiTrash onClick={trashToFile} size={24} className='absolute cursor-pointer hover:bg-red-700  rounded  top-4 left-5 text-white' />
+                <button
                 onClick={() => setFullscreenItem(null)}
                 className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-gray-700"
               >
                 <CgClose />
               </button>
+              </>
             )}
           </div>
         ))}
@@ -362,6 +376,7 @@ const GallerySelection = () => {
           <p>Gösterilecek içerik bulunamadı.</p>
         </div>
       )}
+     <Toaster /> 
     </div>
   );
 };
