@@ -1,3 +1,12 @@
 [
-    { "id": 2, "title": "Image 2", "url": "http://localhost:5173/src/IMG/cat.png" }
+  {
+    "id": 2,
+    "title": "Image 2",
+    "url": "http://localhost:5173/src/IMG/cat.png"
+  },
+  {
+    "id": 1743340660471,
+    "title": "mos_def",
+    "url": "http://localhost:5000/pictures/picture-1743340660468-861755326.jpeg"
+  }
 ]
