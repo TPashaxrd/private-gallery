@@ -17,9 +17,9 @@ const Footer = () => {
 
   return (
     <>
-     <div className="px-16 py-4 font-bungee-tint bg-[#1D2021] flex justify-between">
+     <div className="px-16 py-4 text-2xl font-winky-sans bg-[#1D2021] flex justify-between">
         <div>
-        &copy; Host by {config.name} | Created by {config.ownName}
+        &copy; HOST BY {config.name.toUpperCase()} | CREATED BY {config.ownName.toUpperCase()}
         </div>
         <div className="flex gap-2 cursor-pointer">
             {/* Social Media Icons */}
