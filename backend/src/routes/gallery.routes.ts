@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { GalleryController } from "../controllers/gallery.controller";
+import { getGallery, downloadAll } from "../controllers/gallery.controller";
 
 const router = Router();
-const galleryController = new GalleryController();
 
-router.get("/gallery", galleryController.getGallery.bind(galleryController));
+router.get("/gallery", getGallery);
+router.get("/gallery/download", downloadAll);
 
 export default router;
