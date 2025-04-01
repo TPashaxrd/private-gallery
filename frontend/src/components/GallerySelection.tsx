@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { BiSearch, BiTrash, BiVolume } from 'react-icons/bi';
 import { BsArrowsFullscreen, BsFullscreenExit } from 'react-icons/bs';
 import { CgClose } from 'react-icons/cg';
@@ -6,6 +6,7 @@ import { config } from '../data/config';
 import toast, { Toaster } from 'react-hot-toast';
 import { GrFavorite } from 'react-icons/gr';
 import { MdFavorite } from 'react-icons/md';
+import { debounce } from 'lodash';
 
 interface GalleryItem {
   id: string;
@@ -23,7 +24,18 @@ const GallerySelection = () => {
   const [error, setError] = useState<string | null>(null);
   const [fullscreenItem, setFullscreenItem] = useState<string | null>(null);
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
+  const [searchTerm, setSearchTerm] = useState("");
   const [videoStates, setVideoStates] = useState<{ [key: string]: { isPlaying: boolean; volume: number; currentTime: number; duration: number } }>({});
+
+  const filteredGallery = useMemo(() => {
+    if (!searchTerm.trim()) return galleryItems;
+    
+    const term = searchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return galleryItems.filter(item => {
+      const title  = item.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return title.includes(term);
+    });
+  }, [galleryItems, searchTerm]);
 
   const fetchGallery = async (type: string) => {
     setIsLoading(true);
@@ -47,6 +59,13 @@ const GallerySelection = () => {
           return acc;
         }, {} as { [key: string]: any });
         setVideoStates(initialStates);
+
+        const savedItems = JSON.parse(localStorage.getItem('savedGalleryItems') || '{}');
+        const savedStatus = itemsWithType.reduce((acc, item) => {
+          acc[item.id] = !!savedItems[item.id];
+          return acc;
+        }, {} as { [key: string]: boolean });
+        setIsSaved(savedStatus);
       } else {
         throw new Error("Invalid data format: Expected { data: [...] }");
       }
@@ -135,16 +154,18 @@ const GallerySelection = () => {
       setFullscreenItem(itemId);
     }
   };
-  function trashToFile(itemId: string) {
-    toast.success(`Successyful Deleted!`, {
+
+  const trashToFile = (itemId: string) => {
+    toast.success(`Successfully Deleted!`, {
       style: {
         backgroundColor: '#1D2021',
         color: '#D4BE98',
       }
     });
-    toggleFullscreen(itemId)
-  }
-  function saveToFile(item: GalleryItem) {
+    toggleFullscreen(itemId);
+  };
+
+  const saveToFile = (item: GalleryItem) => {
     const savedItems = JSON.parse(localStorage.getItem('savedGalleryItems') || '{}');
     
     if (savedItems[item.id]) {
@@ -158,8 +179,7 @@ const GallerySelection = () => {
           color: '#D4BE98',
         }
       });
-    } 
-    else {
+    } else {
       const updated = {
         ...savedItems,
         [item.id]: item
@@ -173,13 +193,19 @@ const GallerySelection = () => {
         }
       });
     }
-  }
+  };
   
   const handleKeyDown = (e: React.KeyboardEvent, itemId: string) => {
     if (e.key === 'Escape') {
       toggleFullscreen(itemId);
     }
   };
+
+  const debouncedSearch = useMemo(
+    () => debounce((value: string) => setSearchTerm(value), 0),
+    []
+  );
+
   useEffect(() => {
     const interval = setInterval(() => {
       const updates: { [key: string]: any } = {};
@@ -239,36 +265,40 @@ const GallerySelection = () => {
       </div>
       
       {/* Search */}
-       <div className='-mt-5 flex justify-center '>
+      <div className='-mt-5 flex justify-center'>
+        <div className="relative w-1/2">
           <input
-           type="search"
-           placeholder='Search'
-           className='px-2 py-2 rounded-xl font-space-grotesk w-1/2 bg-[#1D2021] placeholder:mr-2 focus:outline-none'
-           />
-       </div>
+            type="text"
+            placeholder='Search in titles...'
+            value={searchTerm}
+            onChange={(e) => debouncedSearch(e.target.value)}
+            className='px-4 py-2 rounded-xl font-space-grotesk w-full bg-[#1D2021] placeholder-gray-400 focus:outline-none'
+          />
+          <BiSearch className="absolute right-3 top-3 text-gray-400" />
+        </div>
+      </div>
 
       {isLoading && (
         <div className="text-center py-10">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-          <p>Yükleniyor...</p>
+          <p>Loading...</p>
         </div>
       )}
       
       {error && (
         <div className="text-center py-10 text-red-500">
-          <p>Hata: {error}</p>
+          <p>Error: {error}</p>
           <button 
             onClick={() => fetchGallery(selectGallery ? 'videos' : 'pictures')}
             className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
           >
-            Yeniden Dene
+            Try Again
           </button>
         </div>
       )}
 
       <div className="grid grid-cols-1 mt-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {galleryItems.map((item) => (
-          // Here is, About Card
+        {filteredGallery.map((item) => (
           <div 
             key={item.id} 
             className={`bg-[#1D2021] rounded-lg justify-between overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ${
@@ -306,7 +336,7 @@ const GallerySelection = () => {
                   }}
                 >
                   <source src={item.url} type="video/mp4" />
-                  Tarayıcınız video etiketini desteklemiyor.
+                  Your browser does not support the video tag.
                 </video>
                 
                 <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 ${
@@ -355,7 +385,7 @@ const GallerySelection = () => {
                           handleVolumeChange(item.id, e);
                         }}
                         className="w-16 cursor-pointer accent-blue-500"
-                        title="Ses seviyesi"
+                        title="Volume"
                         onClick={(e) => e.stopPropagation()}
                       />
                     </div>
@@ -370,65 +400,82 @@ const GallerySelection = () => {
                   className={`${fullscreenItem === item.id ? 'object-contain h-full max-h-[90vh]' : 'w-full h-48 object-cover'}`}
                   loading="lazy"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Resim+Yüklenemedi';
+                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
                   }}
                 />
               </div>
             )}
             
             <div className={`${fullscreenItem === item.id ? 'absolute w-full bottom-4 left-0 right-0 text-center' : 'p-4'}`}>
-          <div className='flex justify-between items-center px-4'>
-            <h3 className="flex justify-between text-lg font-semibold text-white truncate flex-1 text-center">
-              <BiSearch title="Search in Google" onClick={() => window.location.href = `https://google.com/search?q=intext:"${item.title}"`} size={23} className="mt-1 cursor-pointer" /> <span>{item.title}</span>
-            </h3>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFullscreen(item.id);
-              }}
-              className="hover:text-blue-300 ml-4 flex-shrink-0"
-            >
-              {fullscreenItem === item.id ? (
-                <BsFullscreenExit size={24} />
-              ) : (
-                <BsArrowsFullscreen size={20} />
+              <div className='flex justify-between items-center px-4'>
+                <h3 className="flex justify-between text-lg font-semibold text-white truncate flex-1 text-center">
+                  <BiSearch 
+                    title="Search in Google" 
+                    onClick={() => window.open(`https://google.com/search?q=${encodeURIComponent(item.title)}`, '_blank')} 
+                    size={23} 
+                    className="mt-1 cursor-pointer hover:text-blue-300" 
+                  /> 
+                  <span className="mx-2">{item.title}</span>
+                </h3>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFullscreen(item.id);
+                  }}
+                  className="text-white hover:text-blue-300 ml-4 flex-shrink-0"
+                >
+                  {fullscreenItem === item.id ? (
+                    <BsFullscreenExit size={24} />
+                  ) : (
+                    <BsArrowsFullscreen size={20} />
+                  )}
+                </button>
+              </div>
+              {!fullscreenItem && (
+                <p className="text-gray-400 text-sm mt-1 line-clamp-2">{item.description}</p>
               )}
-            </button>
-          </div>
-          {!fullscreenItem && (
-            <p className="text-gray-400 text-sm mt-1 line-clamp-2">{item.description}</p>
-          )}
-        </div>
+            </div>
+            
             {fullscreenItem === item.id && (
               <>
-            <button onClick={() => saveToFile(item)}>
-              {isSaved[item.id] ? (
-                <MdFavorite size={26} className='absolute cursor-pointer rounded top-4 left-11 text-white' />
-              ) : (
-                <GrFavorite size={26} className='absolute cursor-pointer rounded top-4 left-11 text-white' />
-              )}
-            </button>
-               <BiTrash onClick={() => trashToFile(item.id)} size={24} className='absolute cursor-pointer hover:bg-red-700  rounded  top-4 left-5 text-white' />
-                 <button
-                onClick={() => setFullscreenItem(null)}
-                className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-gray-700"
-                title="Close fullscreen"
-                aria-label="Close fullscreen"
-              >
-                <CgClose />
-              </button>
+                <button 
+                  onClick={() => saveToFile(item)}
+                  className="absolute top-4 left-11 text-white hover:text-yellow-400"
+                >
+                  {isSaved[item.id] ? (
+                    <MdFavorite size={26} className='cursor-pointer' />
+                  ) : (
+                    <GrFavorite size={26} className='cursor-pointer' />
+                  )}
+                </button>
+                <BiTrash 
+                  onClick={() => trashToFile(item.id)} 
+                  size={24} 
+                  className='absolute cursor-pointer hover:text-red-500 top-4 left-5 text-white' 
+                />
+                <button
+                  onClick={() => setFullscreenItem(null)}
+                  className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-gray-700"
+                  title="Close fullscreen"
+                  aria-label="Close fullscreen"
+                >
+                  <CgClose />
+                </button>
+                {fullscreenItem === item.id && (
+                  <p className="text-gray-300 mt-2 px-4 text-center">{item.description}</p>
+                )}
               </>
             )}
           </div>
         ))}
       </div>
 
-      {!isLoading && !error && galleryItems.length === 0 && (
+      {!isLoading && !error && filteredGallery.length === 0 && (
         <div className="text-center py-10 text-gray-400">
-          <p>Gösterilecek içerik bulunamadı.</p>
+          <p>No items found matching your search.</p>
         </div>
       )}
-     <Toaster /> 
+      <Toaster position="bottom-right" />
     </div>
   );
 };

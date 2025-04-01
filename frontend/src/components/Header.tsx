@@ -14,6 +14,7 @@ interface GalleryItem {
 const Header = () => {
   const [savedFavorites, setSavedFavorites] = useState(false);
   const [favorites, setFavorites] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadFavorites = () => {
@@ -37,6 +38,35 @@ const Header = () => {
   function showFavorites() {
     setSavedFavorites(!savedFavorites);
   }
+
+  const handleDownload = async () => {
+    setLoading(true);
+    try {
+      const downloads = [
+        { url: "http://localhost:5000/api/gallery?type=all", filename: "gallery_all" },
+      ];
+  
+      for (const { url, filename } of downloads) {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Download failed for ${url}`);
+  
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(downloadUrl);
+  
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    } catch (error) {
+      console.error("Error downloading files:", error);
+    }
+    setLoading(false);
+  };
 
   function removeFavorite(id: string) {
     const updatedFavorites = favorites.filter(item => item.id !== id);
@@ -66,7 +96,7 @@ const Header = () => {
               </button>
             </li>
             <li>
-              <button className="bg-[#504944] px-2 py-2 cursor-pointer hover:underline rounded-2xl">
+              <button onClick={handleDownload} className="bg-[#504944] px-2 py-2 cursor-pointer hover:underline rounded-2xl">
                 BuildZIP
               </button>
             </li>
