@@ -8,4 +8,6 @@ export const config = {
     // Dont change.
     ownName: "Toprak",
     ownGit: "https://github.com/TPashaxrd",
+
+    // Haha.. When i write code, I'm not happy because everytime i have some problems.
 }

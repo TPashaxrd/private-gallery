@@ -8,6 +8,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Boldonse&family=Winky+Sans:ital,wght@0,300..900;1,300..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 /* 
 ! font-family: Space Grotesk, serif;
@@ -20,6 +21,7 @@
 ! font-family: "Inter", sans-serif;
 ! font-family: "Boldonse", system-ui;
 ! font-family: "Winky Sans", sans-serif;
+! font-family: "Roboto", sans-serif;
 */
 
 body {
@@ -36,6 +38,9 @@ body {
     display: none;
     /* background-color: #1D2021;
     height: -12px; */
+}
+.font-roboto {
+    font-family: 'Roboto', sans-serif;
 }
 .font-winky-sans {
     font-family: 'Winky Sans', sans-serif;

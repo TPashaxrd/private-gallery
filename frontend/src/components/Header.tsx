@@ -1,8 +1,11 @@
 import { config } from "../data/config";
 import { useState, useEffect } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
-import { BsSave } from "react-icons/bs";
-import { BiTrash } from "react-icons/bi";
+import { BsSave, BsShare } from "react-icons/bs";
+import { BiDownload, BiHome, BiShare, BiTrash, BiUpload } from "react-icons/bi";
+import toast from "react-hot-toast";
+import { GiZipper } from "react-icons/gi";
+import { GrFavorite } from "react-icons/gr";
 
 interface GalleryItem {
   id: string;
@@ -42,26 +45,18 @@ const Header = () => {
   const handleDownload = async () => {
     setLoading(true);
     try {
-      const downloads = [
-        { url: "http://localhost:5000/api/gallery?type=all", filename: "gallery_all" },
-      ];
-  
-      for (const { url, filename } of downloads) {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Download failed for ${url}`);
-  
-        const blob = await response.blob();
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(downloadUrl);
-  
-        await new Promise((resolve) => setTimeout(resolve, 500));
-      }
+      window.location.href = "http://localhost:5000/api/gallery/download";
+      toast.success("Download started! Please check your browser's download folder.", {
+        style: {
+          backgroundColor: '#282828',
+          color: '#D4BE98',
+        },
+        duration: 4000,
+        iconTheme: {
+          primary: '#D4BE98',
+          secondary: '#282828',
+        },
+      });
     } catch (error) {
       console.error("Error downloading files:", error);
     }
@@ -79,25 +74,35 @@ const Header = () => {
       <div className="container mx-auto flex justify-between items-center px-4">
         <h1 className="text-2xl font-bold">{config.name} </h1>
         <nav>
-          <ul className="flex space-x-6">
+          <ul className="flex space-x-2">
             <li>
               <button onClick={() => window.location.href = "/" } className="px-2 py-2 rounded-1xl hover:text-gray-200 transition">
-                Home
+                {/* Home */}
+                <BiHome size={27} className="-mt-1" />
               </button>
             </li>
             <li>
-             <button onClick={showFavorites} className="px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
-                Favorites
+             <button title="Favorite Pictures and Videos" onClick={showFavorites} className="px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
+                {/* Favorites */}
+                <GrFavorite size={25} />
               </button>
             </li>
             <li>
-              <button className="px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
-                Share
+              <button title="Upload" onClick={() => window.location.href = "/upload"} className="px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
+                {/* Upload */}
+                <BiUpload size={30} className="-mt-1" />
               </button>
             </li>
             <li>
-              <button onClick={handleDownload} className="bg-[#504944] px-2 py-2 cursor-pointer hover:underline rounded-2xl">
-                BuildZIP
+              <button title="Share" className="px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
+                {/* Share */}
+                <BsShare size={24} />
+              </button>
+            </li>
+            <li>
+              <button title="Download All" onClick={handleDownload} className="bg-[#504944] px-2 py-2 cursor-pointer hover:underline rounded-2xl">
+                {/* Download All */}
+                <BiDownload size={24} />
               </button>
             </li>
           </ul>
