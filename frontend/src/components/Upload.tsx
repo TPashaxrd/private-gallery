@@ -2,15 +2,17 @@ import { useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import toast, { Toaster } from "react-hot-toast";
-import { CgClose } from "react-icons/cg";
-import { BiEdit, BiSend } from "react-icons/bi";
+import { CgClose, CgPassword } from "react-icons/cg";
+import { BiEdit, BiKey, BiSend } from "react-icons/bi";
 import { TbTrash } from "react-icons/tb";
+import { CiSettings } from "react-icons/ci";
 
 const Upload = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
   const [description, setDescription] = useState<string>("");
   const [showInfo, setShowInfo] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
   const [uploadScreen, setUploadScreen] = useState(false);
   const [selectVideo, setSelectVideo] = useState(false);
   const [selectPicture, setSelectPicture] = useState(false);
@@ -18,11 +20,12 @@ const Upload = () => {
 
   const API_KEY = "your-secret-key-here"
   const API_URL = "http://localhost:5000/api";
-
+  function toggleSettings() {
+    setOpenSettings(!openSettings);
+  }
   function editDescription(){
     setChangeDesc(!changeDesc);
   }
-
   function SelectVideo() {
     setSelectVideo(true);
     setSelectPicture(false);
@@ -53,6 +56,52 @@ const Upload = () => {
 
   function toggleScreen() {
     setUploadScreen(!uploadScreen);
+  }
+  function changePIN() {
+    const currentPIN = localStorage.getItem("PIN");
+    const enteredPIN = prompt("Enter your current PIN for verification:");
+
+    if (enteredPIN === currentPIN) {
+      const newPIN = prompt("Enter your new PIN:");
+      if (newPIN) {
+        localStorage.setItem("PIN", newPIN);
+        toast.success("PIN changed successfully!", {
+          style: {
+            backgroundColor: '#282828',
+            color: '#D4BE98',
+          },
+          duration: 4000,
+          iconTheme: {
+            primary: '#D4BE98',
+            secondary: '#282828',
+          },
+        });
+      } else {
+        toast.error("New PIN cannot be empty.", {
+          style: {
+            backgroundColor: '#282828',
+            color: '#D4BE98',
+          },
+          duration: 4000,
+          iconTheme: {
+            primary: '#D4BE98',
+            secondary: '#282828',
+          },
+        });
+      }
+    } else {
+      toast.error("Incorrect current PIN.", {
+        style: {
+          backgroundColor: '#282828',
+          color: '#D4BE98',
+        },
+        duration: 4000,
+        iconTheme: {
+          primary: '#D4BE98',
+          secondary: '#282828',
+        },
+      });
+    }
   }
   function clearTable(){
     setDescription("");
@@ -284,7 +333,32 @@ const Upload = () => {
             <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50">
               <div className="bg-[#1D2021] text-white p-6 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto relative">
                 <CgClose onClick={toggleScreen} className="hover:bg-gray-700 rounded cursor-pointer absolute right-5 -mt-3" size={25} />
-                <TbTrash className="cursor-pointer hover:bg-[#A89984] hover:text-[#D4BE98] -mt-2" onClick={clearTable} title="Clear" size={23} />
+                <button 
+                  onClick={toggleSettings} 
+                  title="Toggle Settings" 
+                  className="px-2 py-4 bg-[#D4BE98] text-[#1D2021] rounded-lg hover:bg-[#A89984] transition"
+                >
+                  <CiSettings size={25} className={`${openSettings ? "rotate-90 transition-transform" : ""}`} />
+                </button>
+                {openSettings && (
+                  <div className="font-space-grotesk absolute top-0 left-0 p-4 bg-[#1D2021] rounded-lg shadow-lg w-64">
+                  <button 
+                    onClick={clearTable} 
+                    title="Clear All Data"
+                    className="flex px-4 gap-2 py-2 bg-[#282828] hover:bg-[#444444] text-white rounded-lg transition w-full"
+                  >
+                <TbTrash className="cursor-pointer" onClick={clearTable} title="Clear" size={23} />
+                Clear Table
+                </button>
+                  <button 
+                    onClick={changePIN}
+                    title="Change PIN"
+                    className="px-4 gap-2 flex py-2 text-start bg-[#282828] hover:bg-[#444444] text-white rounded-lg transition w-full mt-2"
+                  >
+                     <BiKey size={23} /> Change PIN
+                  </button>
+                  </div>
+                )}
                 <h1 className="text-center text-2xl text-[#D4BE98] font-roboto">Verified & Approve</h1>
                 <div className="flex flex-col items-center mt-4">
                 <div className="flex gap-4">

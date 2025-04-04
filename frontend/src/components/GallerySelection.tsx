@@ -8,6 +8,7 @@ import { GrFavorite } from 'react-icons/gr';
 import { MdFavorite } from 'react-icons/md';
 import { debounce } from 'lodash';
 import { FaPause, FaPlay } from 'react-icons/fa';
+import PassSec from './PassSec';
 
 interface GalleryItem {
   id: string;
@@ -485,6 +486,7 @@ const GallerySelection = () => {
           <p>No items found matching your search.</p>
         </div>
       )}
+      <PassSec />
       <Toaster position="bottom-right" />
     </div>
   );
