@@ -7,6 +7,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { GrFavorite } from 'react-icons/gr';
 import { MdFavorite } from 'react-icons/md';
 import { debounce } from 'lodash';
+import { FaPause, FaPlay } from 'react-icons/fa';
 
 interface GalleryItem {
   id: string;
@@ -281,7 +282,7 @@ const GallerySelection = () => {
             onChange={(e) => debouncedSearch(e.target.value)}
             className='px-4 py-2 rounded-xl font-space-grotesk w-full bg-[#1D2021] placeholder-gray-400 focus:outline-none'
           />
-          <BiSearch className="absolute right-3 top-3 text-gray-400" />
+          <BiSearch title="Search in Google" className="absolute right-3 top-3 text-gray-400" />
         </div>
       </div>
 
@@ -303,12 +304,13 @@ const GallerySelection = () => {
           </button>
         </div>
       )}
-
-      <div className="grid grid-cols-1 mt-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {/* Here Footer */}
+      {/* <div className="grid grid-cols-1 mt-2 max-h-25px sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"> */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 mt-2">        
         {filteredGallery.map((item) => (
           <div 
             key={item.id} 
-            className={`bg-[#1D2021] rounded-lg justify-between overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ${
+            className={`bg-[#282828] rounded-b-1xl justify-between overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ${
               fullscreenItem === item.id ? 
                 'fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4' : 
                 'relative'
@@ -317,7 +319,7 @@ const GallerySelection = () => {
             tabIndex={0}
           >
             {item.type === 'video' ? (
-              <div className={`relative ${fullscreenItem === item.id ? 'w-full h-full max-h-[90vh]' : ''}`}>
+              <div className={`relative ${fullscreenItem === item.id ? 'w-full h-full  max-h-[90vh]' : ''}`}>
                 <video
                   ref={el => { videoRefs.current[item.id] = el; }}
                   className={`w-full cursor-pointer ${fullscreenItem === item.id ? 'h-full object-contain' : 'h-48 object-cover'}`}
@@ -357,7 +359,7 @@ const GallerySelection = () => {
                       }} 
                       className="text-white hover:text-blue-300 text-sm"
                     >
-                      {videoStates[item.id]?.isPlaying ? '⏸' : '▶'}
+                      {videoStates[item.id]?.isPlaying ? <FaPause /> : <FaPlay />}
                     </button>
                     
                     <div 
@@ -414,22 +416,22 @@ const GallerySelection = () => {
             )}
             
             <div className={`${fullscreenItem === item.id ? 'absolute w-full bottom-4 left-0 right-0 text-center' : 'p-4'}`}>
-              <div className='flex justify-between items-center px-4'>
-                <h3 className="flex justify-between text-lg font-semibold text-white truncate flex-1 text-center">
-                  <BiSearch 
-                    title="Search in Google" 
+              <div className='flex justify-between items-center -mt-6'>
+                <h3 className="flex mt-2 justify-between text-lg font-semibold text-white truncate text-center">
+                  <BiSearch
+                    title="Search in Google"
                     onClick={() => window.open(`https://google.com/search?q=${encodeURIComponent(item.title)}`, '_blank')} 
                     size={23} 
-                    className="mt-1 cursor-pointer hover:text-blue-300" 
+                    className="mt-2 cursor-pointer hover:text-blue-300" 
                   /> 
-                  <span className="mx-2">{item.title}</span>
+                  <span className="mx-2 mt-1 text-[#D4BE98] font-roboto">{item.title}</span>
                 </h3>
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleFullscreen(item.id);
                   }}
-                  className="text-white hover:text-blue-300 ml-4 flex-shrink-0"
+                  className="text-white mt-4 hover:text-blue-300 ml-4 flex-shrink-0"
                 >
                   {fullscreenItem === item.id ? (
                     <BsFullscreenExit size={24} />
@@ -447,17 +449,18 @@ const GallerySelection = () => {
               <>
                 <button 
                   onClick={() => saveToFile(item)}
-                  className="absolute top-4 left-11 text-white hover:text-yellow-400"
+                  className="absolute top-4 left-14 text-white hover:text-yellow-400"
                 >
                   {isSaved[item.id] ? (
-                    <MdFavorite size={26} className='cursor-pointer' />
+                    <MdFavorite size={30} className='cursor-pointer' />
                   ) : (
-                    <GrFavorite size={26} className='cursor-pointer' />
+                    <GrFavorite size={30} className='cursor-pointer' />
                   )}
                 </button>
                 <BiTrash 
                   onClick={() => trashToFile(item.id)} 
-                  size={24} 
+                  size={32}
+                  title='Delete this item'
                   className='absolute cursor-pointer hover:text-red-500 top-4 left-5 text-white' 
                 />
                 <button

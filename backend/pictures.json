@@ -13,5 +13,15 @@
     "id": 1743684192252,
     "title": "sa",
     "url": "http://localhost:5000/pictures/picture-1743684192250-127429618.jpg"
+  },
+  {
+    "id": 1743685611883,
+    "title": "Ataturk_1",
+    "url": "http://localhost:5000/pictures/picture-1743685611883-750141808.png"
+  },
+  {
+    "id": 1743685660027,
+    "title": "Ataturk_2",
+    "url": "http://localhost:5000/pictures/picture-1743685660026-911601355.webp"
   }
 ]
