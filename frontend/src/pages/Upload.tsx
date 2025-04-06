@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import toast, { Toaster } from "react-hot-toast";
@@ -43,7 +43,12 @@ const Upload = () => {
     setSelectedFormat("pictures");
     console.warn(`New Format: ${selectedFormat?.toUpperCase()}`)
   }
-
+  useEffect(() => {
+    const checkPrivate = localStorage.getItem("private");
+    if (checkPrivate === "true") {
+      window.location.href = "/"
+    }
+  })
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
@@ -54,7 +59,6 @@ const Upload = () => {
     setDescription(event.target.value);
     console.log(`New Description: ${description}`)
   };
-
   const toggleInfo = () => {
     setShowInfo(!showInfo);
   };

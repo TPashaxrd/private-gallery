@@ -9,7 +9,6 @@ const PassSec = () => {
     const [enteredPassword, setEnteredPassword] = useState<string>('');
     const [ifTemp, setIFTemp] = useState(false);
     const [newPIN, setNewPIN] = useState<string>('');
-
     
     useEffect(() => {
         const checkPIN = localStorage.getItem('pinset');

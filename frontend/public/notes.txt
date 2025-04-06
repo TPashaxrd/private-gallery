@@ -1,3 +1,3 @@
 CTRL + ENTER = Clear Localstorage
 F12 = BLOCKED
-CTRL + G = if private, unPrivate if noPrivate, setPrivate 
+CTRL + G = if private, unPrivate if noPrivate, setPrivate   
