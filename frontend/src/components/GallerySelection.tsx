@@ -8,7 +8,7 @@ import { GrFavorite } from 'react-icons/gr';
 import { MdFavorite } from 'react-icons/md';
 import { debounce } from 'lodash';
 import { FaPause, FaPlay } from 'react-icons/fa';
-import PassSec from './PassSec';
+import PassSec from './Security/LocalPIN';
 
 interface GalleryItem {
   id: string;
@@ -28,6 +28,7 @@ const GallerySelection = () => {
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [videoStates, setVideoStates] = useState<{ [key: string]: { isPlaying: boolean; volume: number; currentTime: number; duration: number } }>({});
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const filteredGallery = useMemo(() => {
     if (!searchTerm.trim()) return galleryItems;
@@ -38,6 +39,15 @@ const GallerySelection = () => {
       return title.includes(term);
     });
   }, [galleryItems, searchTerm]);
+
+  useEffect(() => {
+    const checkPrivate = localStorage.getItem("privated");
+    if (checkPrivate === "true") {
+
+    } else if (checkPrivate === "false") {
+      setIsPrivate(true);
+    }
+  })
 
   const fetchGallery = async (type: string) => {
     setIsLoading(true);
@@ -250,6 +260,8 @@ const GallerySelection = () => {
 
   return (
     <div className="font-montserrat p-4">
+      {isPrivate ? (
+      <>
       <div className="flex justify-center mb-8">
         <div className="flex gap-4 bg-[#1D2021] p-2 rounded-full">
           <button
@@ -448,38 +460,60 @@ const GallerySelection = () => {
             
             {fullscreenItem === item.id && (
               <>
-                <button 
-                  onClick={() => saveToFile(item)}
-                  className="absolute top-4 left-14 text-white hover:text-yellow-400"
-                >
-                  {isSaved[item.id] ? (
-                    <MdFavorite size={30} className='cursor-pointer' />
-                  ) : (
-                    <GrFavorite size={30} className='cursor-pointer' />
-                  )}
-                </button>
-                <BiTrash 
-                  onClick={() => trashToFile(item.id)} 
-                  size={32}
-                  title='Delete this item'
-                  className='absolute cursor-pointer hover:text-red-500 top-4 left-5 text-white' 
-                />
+                <div className="absolute top-4 right-16 flex items-center space-x-4">
+                  <BiTrash 
+                    onClick={() => trashToFile(item.id)} 
+                    size={31}
+                    title='Delete this item'
+                    className='cursor-pointer hover:text-red-500 text-white' 
+                  />
+                  <button 
+                    onClick={() => saveToFile(item)}
+                    className="text-white hover:text-yellow-400"
+                    title={isSaved[item.id] ? "Remove from favorites" : "Add to favorites"}
+                  >
+                    {isSaved[item.id] ? (
+                      <MdFavorite size={28} className='cursor-pointer' />
+                    ) : (
+                      <GrFavorite size={28} className='cursor-pointer' />
+                    )}
+                  </button>
+                </div>
+
                 <button
                   onClick={() => setFullscreenItem(null)}
-                  className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-gray-700"
+                  className="absolute top-2 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-gray-700"
                   title="Close fullscreen"
                   aria-label="Close fullscreen"
                 >
-                  <CgClose />
+                  <CgClose size={25} />
                 </button>
-                {fullscreenItem === item.id && (
-                  <p className="text-gray-300 mt-2 px-4 text-center">{item.description}</p>
+
+                {item.description && (
+                  <p className="text-gray-300 mt-2 px-4 text-center absolute bottom-4 w-full">
+                    {item.description}
+                  </p>
                 )}
               </>
             )}
           </div>
         ))}
       </div>
+     </>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-4 text-xl">
+          <div className="text-gray-300">Hello {config.name}, Sorry!</div>
+          <div className="text-center text-red-500">
+            <p>Error: No Services Available</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      )}
 
       {!isLoading && !error && filteredGallery.length === 0 && (
         <div className="text-center py-10 text-gray-400">

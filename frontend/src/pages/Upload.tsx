@@ -1,25 +1,30 @@
 import { useState } from "react";
-import Footer from "./Footer";
-import Header from "./Header";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
 import toast, { Toaster } from "react-hot-toast";
-import { CgClose, CgPassword } from "react-icons/cg";
+import { CgClose } from "react-icons/cg";
 import { BiEdit, BiKey, BiSend } from "react-icons/bi";
 import { TbTrash } from "react-icons/tb";
 import { CiSettings } from "react-icons/ci";
+import { config } from "../data/config";
+import PassSec from "../components/Security/LocalPIN";
 
 const Upload = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
   const [description, setDescription] = useState<string>("");
   const [showInfo, setShowInfo] = useState(false);
+  const [openPIN, setOpenPIN] = useState(false);
+  const [takePIN, setTakePIN] = useState<string>("");
   const [openSettings, setOpenSettings] = useState(false);
   const [uploadScreen, setUploadScreen] = useState(false);
   const [selectVideo, setSelectVideo] = useState(false);
   const [selectPicture, setSelectPicture] = useState(false);
   const [changeDesc, setChangeDesc] = useState(false);
 
-  const API_KEY = "your-secret-key-here"
-  const API_URL = "http://localhost:5000/api";
+  const API_KEY = `${config.API_KEY}`
+  const API_URL = `${config.api}/api`
+
   function toggleSettings() {
     setOpenSettings(!openSettings);
   }
@@ -58,13 +63,13 @@ const Upload = () => {
     setUploadScreen(!uploadScreen);
   }
   function changePIN() {
-    const currentPIN = localStorage.getItem("PIN");
+    const currentPIN = localStorage.getItem("password");
     const enteredPIN = prompt("Enter your current PIN for verification:");
 
     if (enteredPIN === currentPIN) {
       const newPIN = prompt("Enter your new PIN:");
       if (newPIN) {
-        localStorage.setItem("PIN", newPIN);
+        localStorage.setItem("password", newPIN);
         toast.success("PIN changed successfully!", {
           style: {
             backgroundColor: '#282828',
@@ -123,9 +128,12 @@ const Upload = () => {
     })
   }
 
-  const submitFile = async () => {
-    if (!selectedFile || !description || !selectedFormat) {
-      toast.error("No File or Description Selected.", {
+  function checkPIN() {
+    setTakePIN("");
+    const currentPIN = localStorage.getItem("password");
+    if (takePIN === currentPIN) {
+      submitFile();
+      toast.success("PIN verified successfully!", {
         style: {
           backgroundColor: '#282828',
           color: '#D4BE98',
@@ -136,16 +144,25 @@ const Upload = () => {
           secondary: '#282828',
         },
       });
-      return;
+    } else {
+      toast.error("Incorrect PIN.", {
+        style: {
+          backgroundColor: '#282828',
+          color: '#D4BE98',
+        }
+      });
     }
-  
+  }
+  const submitFile = async () => {
     const formData = new FormData();
     const headers = {
       "x-api-key": API_KEY,
     };
   
     if (selectedFormat === "pictures") {
-      formData.append("picture", selectedFile);
+      if (selectedFile) {
+        formData.append("picture", selectedFile);
+      }
       formData.append("title", description);
   
       try {
@@ -156,6 +173,11 @@ const Upload = () => {
         });
   
         if (response.ok) {
+          setSelectedFile(null);
+          setDescription("");
+          setSelectVideo(false);
+          console.warn("Cleared all data.", {selectedFile, description});
+          setSelectPicture(false);
           toast.success("Picture uploaded successfully!", {
             style: {
               backgroundColor: '#282828',
@@ -179,12 +201,15 @@ const Upload = () => {
               secondary: '#282828',
             },
           });
+
         }
       } catch (error) {
         console.error("Error uploading picture:", error);
       }
     } else if (selectedFormat === "videos") {
-      formData.append("video", selectedFile);
+      if (selectedFile) {
+        formData.append("video", selectedFile);
+      }
       formData.append("title", description);
   
       try {
@@ -195,6 +220,11 @@ const Upload = () => {
         });
   
         if (response.ok) {
+          setSelectedFile(null);
+          setDescription("");
+          setSelectVideo(false);
+          console.warn("Cleared all data.", {selectedFile, description});
+          setSelectPicture(false);
           toast.success("Video uploaded successfully!", {
             style: {
               backgroundColor: '#282828',
@@ -336,10 +366,36 @@ const Upload = () => {
                 <button 
                   onClick={toggleSettings} 
                   title="Toggle Settings" 
-                  className="px-2 py-4 bg-[#D4BE98] text-[#1D2021] rounded-lg hover:bg-[#A89984] transition"
+                  className="px-2 py-4 rounded-lg hover:bg-gray-700/10 transition"
                 >
                   <CiSettings size={25} className={`${openSettings ? "rotate-90 transition-transform" : ""}`} />
                 </button>
+                {openPIN && (
+              <div className="font-space-grotesk p-4 bg-[#1D2021] rounded-lg shadow-lg w-64 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+                <CgClose 
+                  onClick={() => setOpenPIN(false) } 
+                  className="hover:bg-gray-700 rounded cursor-pointer absolute right-2 top-2" 
+                  size={20} 
+                />
+                <input
+                  placeholder="Enter your PIN"
+                  type="password" 
+                  value={takePIN}
+                  onChange={(e) => setTakePIN(e.target.value)}
+                  className="flex px-4 gap-2 py-2 bg-[#282828] hover:bg-[#444444] text-white rounded-lg transition w-full"
+                />
+                <button 
+                  className="flex px-4 gap-2 py-2 bg-[#444444] hover:bg-[#5A5A5A] text-[#D4BE98] rounded-lg transition w-full mt-2" 
+                  onClick={() => {
+                    checkPIN();
+                    setOpenPIN(false);
+                  }}
+                >
+                  Verify PIN
+                </button>
+              </div>
+            )}
+
                 {openSettings && (
                   <div className="font-space-grotesk absolute top-0 left-0 p-4 bg-[#1D2021] rounded-lg shadow-lg w-64">
                   <button 
@@ -356,6 +412,13 @@ const Upload = () => {
                     className="px-4 gap-2 flex py-2 text-start bg-[#282828] hover:bg-[#444444] text-white rounded-lg transition w-full mt-2"
                   >
                      <BiKey size={23} /> Change PIN
+                  </button>
+                  <button 
+                    onClick={toggleSettings}
+                    title="Close Settings"
+                    className="px-4 gap-2 flex py-2 text-[#282828] text-start bg-[#D4BE98] text-[#D4BE98] hover:bg-[#444444] text-white rounded-lg transition w-full mt-2"
+                  >
+                     <CiSettings size={23} /> Close Settings
                   </button>
                   </div>
                 )}
@@ -480,9 +543,25 @@ const Upload = () => {
                     </div>
                     )}
                   <div className="flex flex-col items-center justify-center mt-4">
-                    <button title="Upload a file" className="px-2 py-3 w-full hover:underline bg-[#D4BE98] text-center text-[#1D2021] rounded-lg hover:bg-[#A89984] transition font-medium" onClick={submitFile}>
-                      Sumbit
-                    </button>
+                  <button 
+                  title="Upload a file" 
+                  className="px-2 py-3 w-full hover:underline bg-[#D4BE98] text-center text-[#1D2021] rounded-lg hover:bg-[#A89984] transition font-medium" 
+                  onClick={() => {
+                    if (!selectedFile || !description || !selectedFormat) {
+                      toast.error("No File or Description Selected.", {
+                        style: {
+                          backgroundColor: '#282828',
+                          color: '#D4BE98',
+
+                        }
+                      });
+                      return;
+                    }
+                    setOpenPIN(true);
+                  }}
+                >
+                  Submit
+                </button>
                   </div>
 
                   {/* Change Description  */}
@@ -512,6 +591,7 @@ const Upload = () => {
       </div>
 
       <Footer />
+      <PassSec />
       <Toaster position="bottom-center" />
     </>
   );

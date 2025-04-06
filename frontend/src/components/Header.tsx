@@ -2,10 +2,10 @@ import { config } from "../data/config";
 import { useState, useEffect } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
 import { BsSave, BsShare } from "react-icons/bs";
-import { BiDownload, BiHome, BiShare, BiTrash, BiUpload } from "react-icons/bi";
+import { BiDownload, BiHome, BiTrash, BiUpload } from "react-icons/bi";
 import toast from "react-hot-toast";
-import { GiZipper } from "react-icons/gi";
 import { GrFavorite } from "react-icons/gr";
+import { CiSettings } from "react-icons/ci";
 
 interface GalleryItem {
   id: string;
@@ -18,6 +18,18 @@ const Header = () => {
   const [savedFavorites, setSavedFavorites] = useState(false);
   const [favorites, setFavorites] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(true);
+
+  useEffect(() => {
+    const ifHidden = localStorage.getItem("privated");
+    if (ifHidden == "false") {
+      console.log("Site isnt hidden.")
+    } else if (ifHidden == "true") {
+      console.log("Site is hidden.")
+      setSavedFavorites(false);
+      setIsPrivate(false);
+    }
+  }, [])
 
   useEffect(() => {
     const loadFavorites = () => {
@@ -37,6 +49,7 @@ const Header = () => {
       loadFavorites();
     }
   }, [savedFavorites]);
+  
 
   function showFavorites() {
     setSavedFavorites(!savedFavorites);
@@ -45,7 +58,7 @@ const Header = () => {
   const handleDownload = async () => {
     setLoading(true);
     try {
-      window.location.href = "http://localhost:5000/api/gallery/download";
+      window.location.href = `${config.api}/api/gallery/download`;
       toast.success("Download started! Please check your browser's download folder.", {
         style: {
           backgroundColor: '#282828',
@@ -82,15 +95,16 @@ const Header = () => {
               </button>
             </li>
             <li>
-             <button title="Favorite Pictures and Videos" onClick={showFavorites} className="px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
+             <button title="Favorite Pictures and Videos" onClick={isPrivate ? showFavorites : undefined}
+              className={`px-2 py-2 cursor-pointer -mt-1 rounded-2xl ${isPrivate ? 'hover:underline' : 'opacity-50 cursor-not-allowed'}`}>
                 {/* Favorites */}
-                <GrFavorite size={25} />
+                <GrFavorite size={27} />
               </button>
             </li>
             <li>
-              <button title="Upload" onClick={() => window.location.href = "/upload"} className="px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
+              <button title="Upload" onClick={isPrivate ? () => { window.location.href = "/upload"; } : undefined} className="-mt-1 px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
                 {/* Upload */}
-                <BiUpload size={30} className="-mt-1" />
+                <BiUpload size={33} className="-mt-1" />
               </button>
             </li>
             <li>
@@ -100,9 +114,20 @@ const Header = () => {
               </button>
             </li>
             <li>
-              <button title="Download All" onClick={handleDownload} className="bg-[#504944] px-2 py-2 cursor-pointer hover:underline rounded-2xl">
+                <button 
+                title="Download All" 
+                onClick={isPrivate ? handleDownload : undefined} 
+                className={`bg-[#504944] px-2 py-2 cursor-pointer rounded-2xl ${isPrivate ? 'hover:underline' : 'opacity-50 cursor-not-allowed'}`}
+                disabled={!isPrivate}
+                >
                 {/* Download All */}
                 <BiDownload size={24} />
+                </button>
+            </li>
+            <li>
+              <button title="Settings" onClick={() => window.location.href = "/settings"} className="px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
+                {/* Settings */}
+                <CiSettings size={30} className="-mt-1" />
               </button>
             </li>
           </ul>

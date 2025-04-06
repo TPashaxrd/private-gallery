@@ -3,7 +3,7 @@ export const config = {
     mail: "altintoprak06@gmail.com",
     // About API
     api: "http://localhost:5000",
-    privateKey: "your-private-key",
+    API_KEY: "your-secret-key-here",
 
     // Dont change.
     ownName: "Toprak",
