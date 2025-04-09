@@ -15,18 +15,59 @@ const Footer = () => {
     }
 
     return (
-        <footer className="bg-[#1D2021] text-[#A89984] text-center py-4">
-            <div className="container font-space-grotesk mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-                <div className="text-sm">
-                    &copy; HOST BY {config.name.toUpperCase()} | CREATED BY{" "}
-                    {config.ownName.toUpperCase()}
-                </div>
-                <div className="flex gap-4 mt-2 md:mt-0">
-                    <CgMail onClick={GMail} size={24} className="cursor-pointer hover:text-yellow-400" />
-                    <SiGithub onClick={GoGithub} size={24} className="cursor-pointer hover:text-yellow-400" />
-                    <FaDiscord onClick={GoDiscord} size={24} className="cursor-pointer hover:text-yellow-400" />
-                </div>
+        <footer className="bg-[#1D2021] rounded-t-xl text-[#A89984] py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="text-center md:text-left mb-4 md:mb-0">
+                <p className="text-sm md:text-base font-space-grotesk">
+                &copy; {new Date().getFullYear()} CREATED BY OPENMEDIA.COM.TR
+                </p>
+                <p className="text-xs md:text-sm text-[#928374] mt-1">
+                {config.ownName.toUpperCase()} | INFO@OPENMEDIA.COM.TR
+                </p>
             </div>
+            
+            {/* Social icons */}
+            <div className="flex space-x-6">
+                <button 
+                onClick={GMail} 
+                className="text-[#A89984] hover:text-yellow-400 transition-colors duration-200"
+                aria-label="Email"
+                >
+                <CgMail size={24} />
+                </button>
+                <button 
+                onClick={GoGithub} 
+                className="text-[#A89984] hover:text-yellow-400 transition-colors duration-200"
+                aria-label="GitHub"
+                >
+                <SiGithub size={24} />
+                </button>
+                <button 
+                onClick={GoDiscord} 
+                className="text-[#A89984] hover:text-yellow-400 transition-colors duration-200"
+                aria-label="Discord"
+                >
+                <FaDiscord size={24} />
+                </button>
+            </div>
+            </div>
+            
+            {/* Optional additional links */}
+            <div className="mt-6 pt-6 border-t border-[#3C3836] text-center">
+            <div className="flex flex-wrap justify-center space-x-4">
+                <a href="#" className="text-xs text-[#928374] hover:text-yellow-400 transition-colors">
+                Privacy Policy
+                </a>
+                <a href="#" className="text-xs text-[#928374] hover:text-yellow-400 transition-colors">
+                Terms of Service
+                </a>
+                <a href="#" className="text-xs text-[#928374] hover:text-yellow-400 transition-colors">
+                Contact Us
+                </a>
+            </div>
+            </div>
+        </div>
         </footer>
     );
 };

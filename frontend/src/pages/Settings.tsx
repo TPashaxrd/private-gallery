@@ -21,7 +21,6 @@ const Settings = () => {
     const [isPrivate, setIsPrivate] = useState(() => {
       return localStorage.getItem("privated") === "true";
   });
-  
   function handleAllClear() {
       localStorage.clear();
       toast.success("All data has been cleared!", {
@@ -33,26 +32,22 @@ const Settings = () => {
       localStorage.setItem("privated", "true");
       setIsPrivate(true);
   }
-  
   function privateAll() {
       localStorage.setItem("privated", "true");
       window.location.reload();
       setIsPrivate(true);
   }
-  
   function removeHide() {
       localStorage.setItem("privated", "false");
       setIsPrivate(false);
       window.location.reload();
   }
-  
   useEffect(() => {
       const checkPrivate = localStorage.getItem("privated");
       if (checkPrivate !== null) {
           setIsPrivate(checkPrivate === "true");
       }
   }, []);
-
   useEffect(() => {
     const checkPrivate = localStorage.getItem("privated");
     if (checkPrivate === "true") {
@@ -61,7 +56,6 @@ const Settings = () => {
         setIsPrivate(false);
     }
 }, []);
-
  useEffect(() => {
     const storedShowPIN = localStorage.getItem("pinset");
     if (storedShowPIN === "true") {
@@ -88,7 +82,6 @@ const Settings = () => {
       }
     );
   };
-
   const handleChangePin = (e: React.FormEvent) => {
     e.preventDefault();
     const storedPin = localStorage.getItem("password");
@@ -102,7 +95,6 @@ const Settings = () => {
       });
       return;
     }
-
     if (storedPin !== pin) {
       toast.error("Current PIN is incorrect!", {
         style: {
@@ -112,7 +104,6 @@ const Settings = () => {
       });
       return;
     }
-
     if (newPin !== confirmPin) {
       toast.error("New PINs do not match!", {
         style: {
@@ -122,7 +113,6 @@ const Settings = () => {
       });
       return;
     }
-
     localStorage.setItem("password", newPin);
     toast.success("PIN updated successfully!", {
       style: {
@@ -136,7 +126,6 @@ const Settings = () => {
     setNewPin("");
     setConfirmPin("");
   };
-
   return (
     <>
      <title>{config.name}</title>
@@ -170,7 +159,10 @@ const Settings = () => {
                 </p>
                 <div className="text-end -mt-12">
                  <button
-                  className="font-roboto bg-[#D4BE98] text-[#1D2021] py-2 px-4 rounded hover:bg-[#A89984] transition"
+                  className={`font-roboto bg-[#D4BE98] text-[#1D2021] py-2 px-4 rounded hover:bg-[#A89984] transition
+                    ${isPrivate ? 'bg-gray-300' : 'bg-gray-300' }}
+                    `}
+                  disabled={isPrivate}
                   onClick={() => {
                      setAskClear(true);
                  }}

@@ -1,3 +1,5 @@
 CTRL + ENTER = Clear Localstorage
 F12 = BLOCKED
 CTRL + G = if private, unPrivate if noPrivate, setPrivate   
+
+WHEN IS PRIVATE, set changePIN and Clear All Data is will Privated

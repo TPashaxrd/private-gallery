@@ -1,11 +1,12 @@
 import { config } from "../data/config";
 import { useState, useEffect } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
-import { BsSave, BsShare } from "react-icons/bs";
+import { BsSave } from "react-icons/bs";
 import { BiDownload, BiHome, BiTrash, BiUpload } from "react-icons/bi";
 import toast from "react-hot-toast";
 import { GrFavorite } from "react-icons/gr";
 import { CiSettings } from "react-icons/ci";
+import { GoBlocked } from "react-icons/go";
 
 interface GalleryItem {
   id: string;
@@ -82,14 +83,23 @@ const Header = () => {
     localStorage.setItem('savedGalleryItems', JSON.stringify(updatedFavorites));
   }
 
+  console.log(loading)
+  console.clear()
+
   return (
     <header className="bg-[#1D2021] font-montserrat text-[#D4BE98] py-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center px-4">
-        <h1 className="text-2xl font-bold">{config.name} </h1>
+        <h1 className="text-2xl font-bold flex gap-2">
+          <img src="./favicon.ico" alt="OpenMedia" className="h-79" />
+          {isPrivate ? null : <GoBlocked />}{config.name}</h1>
         <nav>
           <ul className="flex space-x-2">
             <li>
-              <button onClick={() => window.location.href = "/" } className="px-2 py-2 rounded-1xl hover:text-gray-200 transition">
+              <button onClick={() => window.location.href = "/" } 
+              className={`px-2 py-2 rounded-1xl hover:text-gray-200 transition
+                ${isPrivate ? 'hover:underline' : 'opacity-50 cursor-not-allowed' }`}
+              disabled={!isPrivate}
+              >
                 {/* Home */}
                 <BiHome size={27} className="-mt-1" />
               </button>
@@ -102,27 +112,22 @@ const Header = () => {
               </button>
             </li>
             <li>
-              <button title="Upload" onClick={isPrivate ? () => { window.location.href = "/upload"; } : undefined} className="-mt-1 px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
+              <button title="Upload" onClick={isPrivate ? () => { window.location.href = "/upload"; } : undefined} className={`-mt-1 px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition
+                ${isPrivate ? 'hover:underline' : 'opacity-50 cursor-not-allowed' }`}>
                 {/* Upload */}
                 <BiUpload size={33} className="-mt-1" />
               </button>
             </li>
             <li>
-              <button title="Share" className="px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">
-                {/* Share */}
-                <BsShare size={24} />
+              <button 
+               title="Download All" 
+               onClick={isPrivate ? handleDownload : undefined} 
+               className={`bg-[#504944] px-2 py-2 cursor-pointer rounded-2xl ${isPrivate ? 'hover:underline' : 'opacity-50 cursor-not-allowed'}`}
+               disabled={!isPrivate}
+              >
+              {/* Download All */}
+              <BiDownload size={24} />
               </button>
-            </li>
-            <li>
-                <button 
-                title="Download All" 
-                onClick={isPrivate ? handleDownload : undefined} 
-                className={`bg-[#504944] px-2 py-2 cursor-pointer rounded-2xl ${isPrivate ? 'hover:underline' : 'opacity-50 cursor-not-allowed'}`}
-                disabled={!isPrivate}
-                >
-                {/* Download All */}
-                <BiDownload size={24} />
-                </button>
             </li>
             <li>
               <button title="Settings" onClick={() => window.location.href = "/settings"} className="px-2 py-2 rounded-1xl hover:text-gray-200 cursor-pointer transition">

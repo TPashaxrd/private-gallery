@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { toast, Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import MyFile from '../dev/ForDev';
 import { MdCheckBox } from 'react-icons/md';
 const PassSec = () => {
-    const [password, setPassword] = useState<string>('');
-    const [checkSwitch, setCheckSwitch] = useState(false);
+    const [_, setPassword] = useState<string>('');
+    const [__, setCheckSwitch] = useState(false);
     const [showToggle, setShowToggle] = useState(false);
     const [enteredPassword, setEnteredPassword] = useState<string>('');
     const [ifTemp, setIFTemp] = useState(false);
@@ -17,7 +17,6 @@ const PassSec = () => {
             askPassword();
         }
     }, []);
-
     useEffect(() => {
         const checkPIN = localStorage.getItem('pinset');
         const storedPassword = localStorage.getItem('password');

@@ -44,11 +44,11 @@ const Upload = () => {
     console.warn(`New Format: ${selectedFormat?.toUpperCase()}`)
   }
   useEffect(() => {
-    const checkPrivate = localStorage.getItem("private");
+    const checkPrivate = localStorage.getItem("privated");
     if (checkPrivate === "true") {
-      window.location.href = "/"
+      window.location.href = "/";
     }
-  })
+  }, []);
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
@@ -284,7 +284,7 @@ const Upload = () => {
               htmlFor="file-upload"
               className="block w-full p-3 border-2 border-dashed border-[#A89984] rounded-lg bg-[#1D2021] text-[#D4BE98] text-center cursor-pointer hover:bg-[#3C3836] transition"
             >
-              {selectedFile ? selectedFile.name : "Choose a file to upload"}
+              {selectedFile?.name || "Choose a file to upload"}
             </label>
             <input 
               id="file-upload" 
@@ -469,7 +469,7 @@ const Upload = () => {
                      htmlFor="file-upload"
                      className="block w-full p-3 border-2 border-dashed border-[#A89984] rounded-lg bg-[#1D2021] text-[#D4BE98] text-center cursor-pointer hover:bg-[#3C3836] transition"
                    >
-                     {selectedFile ? selectedFile.name : "Choose a file to upload"}
+                     {selectedFile?.name || "Choose a file to upload"}
                    </label>
                    <input 
                      id="file-upload" 
@@ -486,7 +486,8 @@ const Upload = () => {
                   htmlFor="file-upload"
                   className="block mt-2 p-3 border-2 border-dashed border-[#A89984] rounded-lg bg-[#1D2021] text-[#D4BE98] text-center cursor-pointer hover:bg-[#3C3836] transition"
                 >
-                  {selectedFile ? selectedFile.name : "Choose a file to upload" }
+                  {selectedFile ?? "Choose a file to upload." }
+                  {selectedFile && "Choose a file to upload." }
                 </label>
                 <input 
                   id="file-upload" 

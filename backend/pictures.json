@@ -1,5 +1,10 @@
 [
   {
+    "id": 1743963155455,
+    "title": "love_besim_tibuk",
+    "url": "http://localhost:5000/pictures/picture-1743963155454-24755671.jpg"
+  },
+  {
     "id": 2,
     "title": "Image 2",
     "url": "http://localhost:5173/src/IMG/cat.png"
@@ -8,40 +13,5 @@
     "id": 1743340660471,
     "title": "mos_def",
     "url": "http://localhost:5000/pictures/picture-1743340660468-861755326.jpeg"
-  },
-  {
-    "id": 1743684192252,
-    "title": "sa",
-    "url": "http://localhost:5000/pictures/picture-1743684192250-127429618.jpg"
-  },
-  {
-    "id": 1743685611883,
-    "title": "Ataturk_1",
-    "url": "http://localhost:5000/pictures/picture-1743685611883-750141808.png"
-  },
-  {
-    "id": 1743685660027,
-    "title": "Ataturk_2",
-    "url": "http://localhost:5000/pictures/picture-1743685660026-911601355.webp"
-  },
-  {
-    "id": 1743868896947,
-    "title": "bacvgkround",
-    "url": "http://localhost:5000/pictures/picture-1743868896945-14782214.jpg"
-  },
-  {
-    "id": 1743869699723,
-    "title": "tuh-gg",
-    "url": "http://localhost:5000/pictures/picture-1743869699722-884010415.jpg"
-  },
-  {
-    "id": 1743872572010,
-    "title": "batin_bune_aminakoyim",
-    "url": "http://localhost:5000/pictures/picture-1743872571968-313852897.png"
-  },
-  {
-    "id": 1743927997150,
-    "title": "batin_am",
-    "url": "http://localhost:5000/pictures/picture-1743927997109-41885364.png"
   }
 ]
