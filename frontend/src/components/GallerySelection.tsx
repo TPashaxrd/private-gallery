@@ -40,62 +40,60 @@ const GallerySelection = () => {
     });
   }, [galleryItems, searchTerm]);
 
-  useEffect(() => {
-    const checkPrivate = localStorage.getItem("privated");
-    if (checkPrivate === "true") {
+useEffect(() => {
+  const checkPrivate = localStorage.getItem("privated");
+  if (checkPrivate === "true") {
+    setIsPrivate(true);
+  } else {
+    setIsPrivate(true);
+  }
+}, []);
 
-    } else if (checkPrivate === "false") {
-      setIsPrivate(true);
-    }
-  })
 
   const fetchGallery = async (type: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`${config.api}/api/gallery?type=${type}`);
-      if (!response.ok) throw new Error(`HTTP hatası! Durum: ${response.status}`);
-      const result = await response.json();
-      
-      const itemsArray = Array.isArray(result) 
-        ? result 
-        : result.data 
-          ? result.data 
-          : result.items || [];
-  
-      if (itemsArray.length > 0) {
-        const itemsWithType: GalleryItem[] = itemsArray.map((item: any) => ({
-          ...item,
-          type: type === 'videos' ? 'video' : 'image'
-        }));
-  
-        setGalleryItems(itemsWithType);
-        
-        const initialStates = itemsWithType.reduce((acc, item) => {
-          if (item.type === 'video') {
-            acc[item.id] = { isPlaying: false, volume: 1, currentTime: 0, duration: 0 };
-          }
-          return acc;
-        }, {} as { [key: string]: any });
-        setVideoStates(initialStates);
-  
-        const savedItems = JSON.parse(localStorage.getItem('savedGalleryItems') || '{}');
-        const savedStatus = itemsWithType.reduce((acc, item) => {
-          acc[item.id] = !!savedItems[item.id];
-          return acc;
-        }, {} as { [key: string]: boolean });
-        setIsSaved(savedStatus);
-      } else {
-        throw new Error("API boş veri döndü veya beklenen formatta değil");
-      }
-    } catch (err) {
-      console.error("Galeri yüklenirken hata:", err);
-      setError(err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu');
-      setGalleryItems([]);
-    } finally {
-      setIsLoading(false);
+  setIsLoading(true);
+  setError(null);
+  try {
+    const response = await fetch(`${config.api}/api/gallery?type=${type}`);
+    if (!response.ok) throw new Error(`HTTP hatası! Durum: ${response.status}`);
+    const result = await response.json();
+
+    const itemsArray = result.items && Array.isArray(result.items) ? result.items : [];
+
+    if (itemsArray.length === 0) {
+      throw new Error("API boş veri döndü veya beklenen formatta değil");
     }
-  };
+
+    const itemsWithType: GalleryItem[] = itemsArray.map((item: any) => ({
+      ...item,
+      type: type === 'videos' ? 'video' : 'image'
+    }));
+
+    setGalleryItems(itemsWithType);
+
+    const initialStates = itemsWithType.reduce((acc, item) => {
+      if (item.type === 'video') {
+        acc[item.id] = { isPlaying: false, volume: 1, currentTime: 0, duration: 0 };
+      }
+      return acc;
+    }, {} as { [key: string]: any });
+    setVideoStates(initialStates);
+
+    const savedItems = JSON.parse(localStorage.getItem('savedGalleryItems') || '{}');
+    const savedStatus = itemsWithType.reduce((acc, item) => {
+      acc[item.id] = !!savedItems[item.id];
+      return acc;
+    }, {} as { [key: string]: boolean });
+    setIsSaved(savedStatus);
+
+  } catch (err) {
+    console.error("Galeri yüklenirken hata:", err);
+    setError(err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu');
+    setGalleryItems([]);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const toggleGallery = () => {
     const newGalleryState = !selectGallery;
